@@ -22,7 +22,7 @@ first. Then you need [npm](http://github.com/isaacs/npm), node's package manager
 
 Once you're all set, run:
 
-    $ npm install http-console
+    $ npm install http-console2 -g
 
 It'll download the dependencies, and install the command-line tool in `/usr/local/bin`.
 
@@ -30,7 +30,7 @@ It'll download the dependencies, and install the command-line tool in `/usr/loca
 
 The latest release will often be available on npm as `http-console@latest`, so you can run:
 
-    $ npm install http-console@latest
+    $ npm install http-console2@latest -g
 
 Alternatively, you can download a tarball of this repo, or clone it. Just make sure you have
 the latest version of node.
