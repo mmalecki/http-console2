@@ -1,14 +1,30 @@
 {
-  "name"          : "http-console2",
-  "description"   : "Speak HTTP like a native",
-  "url"           : "http://github.com/cloudhead/http-console",
-  "keywords"      : ["http", "console", "repl"],
-  "author"        : "Alexis Sellier <self@cloudhead.net>",
-  "contributors"  : ["Maciej Małecki <maciej.malecki@notimplemented.org>"],
-  "dependencies"  : { "eyes": ">=0.1.4" },
-  "version"       : "0.6.0",
-  "main"          : "./lib/http-console",
-  "directories"   : { "lib": "./lib", "test": "./test" },
-  "bin"           : { "http-console": "./bin/http-console" },
-  "engines"       : { "node": ">=0.3.6" }
+  "name": "http-console2",
+  "description": "Speak HTTP like a native",
+  "url": "http://github.com/cloudhead/http-console",
+  "keywords": [
+    "http",
+    "console",
+    "repl"
+  ],
+  "author": "Alexis Sellier <self@cloudhead.net>",
+  "contributors": [
+    "Maciej Małecki <maciej.malecki@notimplemented.org>"
+  ],
+  "dependencies": {
+    "eyes": ">=0.1.4"
+  },
+  "version": "0.6.1",
+  "main": "./lib/http-console",
+  "directories": {
+    "lib": "./lib",
+    "test": "./test"
+  },
+  "bin": {
+    "http-console": "./bin/http-console"
+  },
+  "engines": {
+    "node": ">=0.3.6"
+  },
+  "devDependencies": {}
 }
