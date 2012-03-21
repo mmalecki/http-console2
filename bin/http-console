@@ -13,6 +13,7 @@ var help = [
   '-v, --verbose      print requests',
   '    --json         set "Content-Type" header to application/json',
   '    --notimeout    don\'t timeout requests',
+  '-c, --config       config file, executed on startup',
   '    --ssl          create a secure connection',
   '    --version      print version',
   '-h, --help         display this message'
@@ -52,6 +53,10 @@ while (arg = argv.shift()) {
                 break;
             case 'notimeout':
                 options.timeout = false;
+                break;
+            case 'c':
+            case 'config':
+                options.configFile = argv.shift();
                 break;
             case 'h':
             case 'help':
