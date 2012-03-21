@@ -29,8 +29,8 @@ var argv = process.argv.slice(2), args = [],
         verbose:         false
     };
 
-while (arg = argv.shift()) {
-    if (option = arg.match(/^--?([\w-]+)$/)) {
+while ((arg = argv.shift())) {
+    if ((option = arg.match(/^--?([\w-]+)$/))) {
         switch (option[1]) {
             case 'cookies':
                 options.rememberCookies = true;
