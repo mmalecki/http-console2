@@ -14,7 +14,7 @@
   "dependencies": {
     "eyes": ">=0.1.4"
   },
-  "version": "0.6.3",
+  "version": "0.6.4",
   "main": "./lib/http-console",
   "directories": {
     "lib": "./lib",
