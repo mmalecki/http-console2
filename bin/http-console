@@ -90,7 +90,7 @@ if (auth) {
 var host = hostPort.shift(),
     port = hostPort.shift() || (options.useSSL ? 443 : 80);
 
-var console = new(httpConsole.Console)(host, port, options);
+var console_ = new(httpConsole.Console)(host, port, options);
 
-console.initialize();
+console_.initialize();
 
