@@ -9,7 +9,7 @@
   ],
   "author": "Alexis Sellier <self@cloudhead.net>",
   "contributors": [
-    "Maciej Małecki <maciej.malecki@notimplemented.org>"
+    "Maciej Małecki <me@mmalecki.com>"
   ],
   "dependencies": {
     "eyes": ">=0.1.4"
