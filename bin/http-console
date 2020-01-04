@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 
-var path = require('path'),
-    util = require('util');
+const path = require('path');
 
-var httpConsole = require('../lib/http-console');
+const HTTPConsole = require('../lib/http-console');
 
-var help = [
-  'usage: http-console [username:password@host:port] [options]',
+const help = [
+  'usage: http-console [protocol://][username:password@][host]:port [options]',
   '',
   'options:',
   '    --cookies      remember cookies',
@@ -14,7 +13,6 @@ var help = [
   '    --json         set "Content-Type" header to application/json',
   '    --notimeout    don\'t timeout requests',
   '-c, --config       config file, executed on startup',
-  '    --ssl          create a secure connection',
   '    --version      print version',
   '-h, --help         display this message'
 ].join('\n');
@@ -22,75 +20,64 @@ var help = [
 var argv = process.argv.slice(2), args = [],
     arg, option,
     options = {
-        rememberCookies: true,
-        useSSL:          protocol === 'https',
-        json:            false,
-        timeout:         true,
-        verbose:         false
+      rememberCookies: true,
+      json:            false,
+      timeout:         true,
+      verbose:         false
     };
+
+if (typeof process.env.NO_COLOR !== 'undefined') options.colors = false
 
 while ((arg = argv.shift())) {
-    if ((option = arg.match(/^--?([\w-]+)$/))) {
-        switch (option[1]) {
-            case 'cookies':
-                options.rememberCookies = true;
-                break;
-            case 'no-cookies':
-                options.rememberCookies = false;
-                break;
-            case 'ssl':
-                options.useSSL = true;
-                break;
-            case 'v':
-            case 'verbose':
-                options.verbose = true;
-                break;
-            case 'version':
-                util.print('http-console v' + httpConsole.version);
-                process.exit(0);
-            case 'json':
-                options.json = true;
-                break;
-            case 'notimeout':
-                options.timeout = false;
-                break;
-            case 'c':
-            case 'config':
-                options.configFile = argv.shift();
-                break;
-            case 'h':
-            case 'help':
-                util.print(help);
-                process.exit(0);
-            default:
-                util.print("http-console: unrecognized option '" + option[0] + "'");
-                process.exit(1);
-        }
-    } else {
-        args.push(arg);
+  if ((option = arg.match(/^--?([\w-]+)$/))) {
+    switch (option[1]) {
+      case 'cookies':
+        options.rememberCookies = true;
+        break;
+      case 'no-cookies':
+        options.rememberCookies = false;
+        break;
+      case 'ssl':
+        options.useSSL = true;
+        break;
+      case 'v':
+      case 'verbose':
+        options.verbose = true;
+        break;
+      case 'version':
+        console.log('http-console v' + httpConsole.version);
+        process.exit(0);
+      case 'json':
+        options.json = true;
+        break;
+      case 'notimeout':
+        options.timeout = false;
+        break;
+      case 'c':
+      case 'config':
+        options.configFile = argv.shift();
+        break;
+      case 'h':
+      case 'help':
+        console.log(help)
+        process.exit(0);
+      default:
+        console.log("http-console: unrecognized option '" + option[0] + "'");
+        process.exit(1);
     }
+  } else {
+    args.push(arg);
+  }
 }
 
-var url      = args.shift() || 'http://127.0.0.1:8080',
-    protocol = url.match(/^(https?)?/)[0] || 'http';
-
-url = url.replace(protocol + '://', '').split('@');
-
-var hostPort = url.pop().split(':'),
-    auth     = url.pop();
-
-if (auth) {
-    auth = auth.split(':');
-    options.auth = {
-        username: auth.shift(),
-        password: auth.shift()
-    };
+const url = args.shift()
+if (!url) {
+  console.log(help)
+  process.exit(1)
 }
 
-var host = hostPort.shift(),
-    port = hostPort.shift() || (options.useSSL ? 443 : 80);
-
-var console_ = new(httpConsole.Console)(host, port, options);
-
-console_.initialize();
-
+const c = new HTTPConsole({
+  baseUrl: url,
+  ...options
+})
+c.start()

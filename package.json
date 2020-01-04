@@ -11,9 +11,6 @@
   "contributors": [
     "Maciej Małecki <me@mmalecki.com>"
   ],
-  "dependencies": {
-    "eyes": ">=0.1.4"
-  },
   "version": "0.7.0",
   "main": "./lib/http-console",
   "directories": {
@@ -23,8 +20,9 @@
   "bin": {
     "http-console": "./bin/http-console"
   },
-  "engines": {
-    "node": ">=0.3.6"
-  },
-  "devDependencies": {}
+  "devDependencies": {},
+  "dependencies": {
+    "got": "^10.2.1",
+    "normalize-url": "^4.5.0"
+  }
 }
