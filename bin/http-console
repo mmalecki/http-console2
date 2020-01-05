@@ -3,6 +3,8 @@
 const path = require('path');
 
 const HTTPConsole = require('../lib/http-console');
+const OpenAPICompleter = require('../lib/completers/openapi.js')
+const HistoryCompleter = require('../lib/completers/history.js')
 
 const help = [
   'usage: http-console [protocol://][username:password@][host]:port [options]',
@@ -14,6 +16,7 @@ const help = [
   '    --notimeout    don\'t timeout requests',
   '-c, --config       config file, executed on startup',
   '    --version      print version',
+  '    --openapi      enables OpenAPI autocompletion',
   '-h, --help         display this message'
 ].join('\n');
 
@@ -23,7 +26,8 @@ var argv = process.argv.slice(2), args = [],
       rememberCookies: true,
       json:            false,
       timeout:         true,
-      verbose:         false
+      verbose:         false,
+      completers:      [ new HistoryCompleter() ]
     };
 
 if (typeof process.env.NO_COLOR !== 'undefined') options.colors = false
@@ -56,6 +60,9 @@ while ((arg = argv.shift())) {
       case 'c':
       case 'config':
         options.configFile = argv.shift();
+        break;
+      case 'openapi':
+        options.completers.push(new OpenAPICompleter())
         break;
       case 'h':
       case 'help':
