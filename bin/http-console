@@ -11,12 +11,12 @@ const help = [
   '',
   'options:',
   '    --cookies      remember cookies',
-  '-v, --verbose      print requests',
+  '-v, --verbose      be more verbose',
   '    --json         set "Content-Type" header to application/json',
   '    --notimeout    don\'t timeout requests',
   '-c, --config       config file, executed on startup',
   '    --version      print version',
-  '    --openapi      enables OpenAPI autocompletion',
+  '    --openapi      enable OpenAPI autocompletion',
   '-h, --help         display this message'
 ].join('\n');
 
