@@ -12,7 +12,7 @@ const argv = require('minimist')(process.argv.slice(2), {
     openapi: false,
     verbose: false,
     help: false,
-    timeout: false,
+    timeout: 5000,
   }
 })
 
