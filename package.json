@@ -23,6 +23,7 @@
   "devDependencies": {},
   "dependencies": {
     "got": "^10.2.1",
+    "minimist": "^1.2.0",
     "normalize-url": "^4.5.0",
     "stream-json": "^1.3.2",
     "swagger-parser": "^8.0.4"

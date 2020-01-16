@@ -1,6 +1,20 @@
 #!/usr/bin/env node
 
 const path = require('path');
+const argv = require('minimist')(process.argv.slice(2), {
+  alias: {
+    verbose: 'v',
+    help: 'h',
+  },
+  boolean: ['verbose', 'help', 'json'],
+  default: {
+    json: false,
+    openapi: false,
+    verbose: false,
+    help: false,
+    timeout: false,
+  }
+})
 
 const HTTPConsole = require('../lib/http-console');
 const OpenAPICompleter = require('../lib/completers/openapi.js')
@@ -10,7 +24,6 @@ const help = [
   'usage: http-console [protocol://][username:password@][host]:port [options]',
   '',
   'options:',
-  '    --cookies      remember cookies',
   '-v, --verbose      be more verbose',
   '    --json         set "Content-Type" header to application/json',
   '    --notimeout    don\'t timeout requests',
@@ -20,64 +33,32 @@ const help = [
   '-h, --help         display this message'
 ].join('\n');
 
-var argv = process.argv.slice(2), args = [],
-    arg, option,
-    options = {
-      rememberCookies: true,
-      json:            false,
-      timeout:         true,
-      verbose:         false,
-      completers:      [ new HistoryCompleter() ]
-    };
+let options = {
+  json:            argv.json,
+  timeout:         argv.timeout,
+  verbose:         argv.verbose,
+  completers:      [ new HistoryCompleter() ]
+};
 
 if (typeof process.env.NO_COLOR !== 'undefined') options.colors = false
 
-while ((arg = argv.shift())) {
-  if ((option = arg.match(/^--?([\w-]+)$/))) {
-    switch (option[1]) {
-      case 'cookies':
-        options.rememberCookies = true;
-        break;
-      case 'no-cookies':
-        options.rememberCookies = false;
-        break;
-      case 'ssl':
-        options.useSSL = true;
-        break;
-      case 'v':
-      case 'verbose':
-        options.verbose = true;
-        break;
-      case 'version':
-        console.log('http-console v' + httpConsole.version);
-        process.exit(0);
-      case 'json':
-        options.json = true;
-        break;
-      case 'notimeout':
-        options.timeout = false;
-        break;
-      case 'c':
-      case 'config':
-        options.configFile = argv.shift();
-        break;
-      case 'openapi':
-        options.completers.push(new OpenAPICompleter())
-        break;
-      case 'h':
-      case 'help':
-        console.log(help)
-        process.exit(0);
-      default:
-        console.log("http-console: unrecognized option '" + option[0] + "'");
-        process.exit(1);
-    }
-  } else {
-    args.push(arg);
-  }
+if (argv.version) {
+  console.log('http-console v' + httpConsole.version);
+  process.exit(0);
 }
 
-const url = args.shift()
+if (argv.openapi) {
+  options.completers.push(new OpenAPICompleter({
+    specEndpoints: typeof argv.openapi === 'string' ? argv.openapi : undefined
+  }))
+}
+
+if (argv.help) {
+  console.log(help)
+  process.exit(0);
+}
+
+const url = argv._.shift()
 if (!url) {
   console.log(help)
   process.exit(1)
