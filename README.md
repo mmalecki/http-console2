@@ -19,6 +19,13 @@ Once you're all set, run:
 
 It'll download the dependencies, and install the command-line tool.
 
+## Docker
+You can also run this application as a Docker container, for example:
+
+    docker run -it mmalecki/http-console2 --insecure https://172.17.0.2:6443
+    ...
+    https://172.17.0.2:6443> get /
+
 # Usage
 Let's assume we have an HTTP API server running on port 8000.
 
