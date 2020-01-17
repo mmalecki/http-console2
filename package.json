@@ -1,7 +1,7 @@
 {
   "name": "http-console2",
   "description": "Speak HTTP like a native",
-  "url": "http://github.com/cloudhead/http-console",
+  "url": "http://github.com/mmalecki/http-console2",
   "keywords": [
     "http",
     "console",
@@ -20,6 +20,10 @@
   },
   "bin": {
     "http-console": "./bin/http-console"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mmalecki/http-console2"
   },
   "devDependencies": {},
   "dependencies": {
