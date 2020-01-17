@@ -6,15 +6,17 @@ const argv = require('minimist')(process.argv.slice(2), {
   alias: {
     verbose: 'v',
     help: 'h',
+    insecure: 'k',
   },
-  boolean: ['verbose', 'help', 'json'],
+  boolean: ['verbose', 'help', 'json', 'insecure'],
   default: {
     json: false,
     openapi: false,
     verbose: false,
     help: false,
     timeout: 5000,
-    history: true
+    history: true,
+    insecure: false,
   }
 })
 
@@ -37,6 +39,7 @@ const help = [
   '    --openapi        enable OpenAPI autocompletion',
   '    --no-history     disable history',
   '    --history <name> use named history',
+  '-k, --insecure       disable TLS certificate verification',
   '-h, --help           display this message'
 ].join('\n');
 
@@ -45,6 +48,7 @@ let options = {
   timeout:         argv.timeout,
   verbose:         argv.verbose,
   completers:      [ new HistoryCompleter() ],
+  rejectUnauthorized: !argv.insecure
 };
 
 if (typeof process.env.NO_COLOR !== 'undefined') options.colors = false
