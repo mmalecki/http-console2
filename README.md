@@ -1,157 +1,150 @@
-http-console
-============
+# http-console2
 
 > Speak HTTP like a local
 
-Talking to an HTTP server with `curl` can be fun, but most of the time it's a `PITA`.
+*http-console2* aims to be a user-friendly, REPL-based HTTP API explorer. In
+addition to [sending basic requests](#making-requests), it supports:
 
-`http-console` is a simple and intuitive interface for speaking the HTTP protocol.
+* [OpenAPI-based autocompletion](#openapi-based-autocompletion)
+* Multiline JSON bodies
 
-*PS: HTTP has never been this much fun.*
-
-synopsis
---------
-
-![http-console](http://dl.dropbox.com/u/251849/http-console.png)
-
-installation
-------------
-
-*http-console* was written for [node](http://nodejs.org), so make sure you have that installed
+# Installation
+*http-console2* was written for [node](http://nodejs.org), so make sure you have that installed
 first. Then you need [npm](http://github.com/isaacs/npm), node's package manager.
 
 Once you're all set, run:
 
     $ npm install http-console2 -g
 
-It'll download the dependencies, and install the command-line tool in `/usr/local/bin`.
+It'll download the dependencies, and install the command-line tool.
 
-### Installing the bleeding edge #
+# Usage
+Let's assume we have an HTTP API server running on port 8000.
 
-The latest release will often be available on npm as `http-console@latest`, so you can run:
-
-    $ npm install http-console2@latest -g
-
-Alternatively, you can download a tarball of this repo, or clone it. Just make sure you have
-the latest version of node.
-
-introduction
-------------
-
-Let's assume we have a [CouchDB](http://couchdb.apache.org) instance running locally.
-
-### connecting #
+## Connecting
 
 To connect, we run `http-console`, passing it the server host and port as such:
 
-    $ http-console 127.0.0.1:5984 
+    $ http-console 127.0.0.1:8000
 
-### navigating #
+Optionally, you can also specify the protocol:
 
-Once connected, we should see the *http prompt*:
+    $ http-console https://127.0.0.1:8433
 
-    http://127.0.0.1:5984/>
+You can also enable JSON parsing and sending from the get-go:
 
-server navigation is similar to directory navigation, except a little simpler:
+    $ http-console --json https://127.0.0.1:8001
 
-    http://127.0.0.1:5984/> /logs
-    http://127.0.0.1:5984/logs> /46
-    http://127.0.0.1:5984/logs/46> ..
-    http://127.0.0.1:5984/logs> ..
-    http://127.0.0.1:5984/>
+Once connected, you'll see the prompt:
 
-### requesting #
+    http://127.0.0.1:8000>
 
-HTTP requests are issued with the HTTP verbs *GET*, *PUT*, *POST*, *HEAD* and *DELETE*, and
-a relative path:
+### Making requests
 
-    http://127.0.0.1:5984/> GET /
+You can make HTTP requests by using their HTTP verb, for example:
+
+    http://127.0.0.1:8000> get /
     HTTP/1.1 200 OK
-    Date: Mon, 31 May 2010 04:43:39 GMT
-    Content-Length: 41
+    content-type: application/json
+    date: Thu, 16 Jan 2020 04:18:16 GMT
+    connection: close
+    transfer-encoding: chunked
 
-    {
-        couchdb: "Welcome",
-        version: "0.11.0"
-    }
+    { hello: 'world' }
 
-    http://127.0.0.1:5984/> GET /bob
+
+    http://127.0.0.1:8000> get /foo
     HTTP/1.1 404 Not Found
-    Date: Mon, 31 May 2010 04:45:32 GMT
-    Content-Length: 44
+    content-type: text/plain; charset=utf-8
+    content-length: 9
+    date: Thu, 16 Jan 2020 04:18:59 GMT
+    connection: close
 
-    {
-        error: "not_found",
-        reason: "no_db_file"
-    }
+    'Not Found'
 
-When issuing *POST* and *PUT* commands, we have the opportunity to send data too:
+You can also send POST/PUT/PATCH/DELETE/etc. requests:
 
-    http://127.0.0.1:5984/> /rabbits
-    http://127.0.0.1:5984/rabbits> POST
+    http://127.0.0.1:8000> POST /rabbits
     ... {"name":"Roger"}
 
     HTTP/1.1 201 Created
-    Location: http://127.0.0.1/rabbits/2fd9db055885e6982462a10e54003127
-    Date: Mon, 31 May 2010 05:09:15 GMT
-    Content-Length: 95
+    content-type: application/json
+    content-length: 62
+    date: Thu, 16 Jan 2020 04:55:22 GMT
+    connection: close
 
-    {
-        ok: true,
-        id: "2fd9db055885e6982462a10e54003127",
-        rev: "1-0c3db91854f26486d1c3922f1a651d86"
-    }
+    { uuid: '61568573-72c3-4cfe-8440-8777fd3a76fc', name: 'Roger' }
 
-Make sure you have your `Content-Type` header set properly, if the API requires it. More
-in the section below.
+#### Multiline JSON bodies
+Editing larger JSON object in a single line quickly turns into a nightmare. *
+That's why *http-console* supports multiline JSON bodies:
 
-> Note that if you're trying to POST to a form handler, you'll most probably want to send data
-in `multipart/form-data` format, such as `name=roger&hair=black`. http-console sends your POST/PUT data *as is*,
-so make sure you've got the format right, and the appropriate `Content-Type` header.
 
-### setting headers #
+    http://127.0.0.1:8000> post /pet-hotel
+    ... {
+    ...   "meta": {
+    ..... "name": "Roger",
+    ..... "kind": "Rabbit",
+    ..... "breed": "Super Fluffy 1000"
+    ..... }
+    ... }
+
+    HTTP/1.1 201 Created
+    content-type: application/json
+    content-length: 62
+    date: Thu, 16 Jan 2020 04:55:22 GMT
+    connection: close
+
+    { uuid: '61568573-72c3-4cfe-8440-8777fd3a76fc' }
+
+Ctrl + C will exit multiline JSON body mode and get you back to the prompt.
+
+### Setting headers
 
 Sometimes, it's useful to set HTTP headers:
 
-    http://127.0.0.1:5984/> Accept: application/json
-    http://127.0.0.1:5984/> X-Lodge: black
+    http://127.0.0.1:8000> Accept: application/json
+    http://127.0.0.1:8000> X-Lodge: black
 
 These headers are sent with all requests in this session. To see all active headers,
 run the `.headers` command:
 
-    http://127.0.0.1:5984/> .headers
+    http://127.0.0.1:8000> .headers
     Accept: application/json
     X-Lodge: black
 
 Removing headers is just as easy:
 
-    http://127.0.0.1:5984/> Accept:
-    http://127.0.0.1:5984/> .headers
+    http://127.0.0.1:8000> Accept:
+    http://127.0.0.1:8000> .headers
     X-Lodge: black
 
-Because JSON is such a common data format, http-console has a way to automatically set
-the `Content-Type` header to `application/json`. Just pass the `--json` option when
-starting http-cosnole, or run the `.json` command:
+### OpenAPI-based autocompletion
+If the API you're chatting with supports OpenAPI, *http-console2* can discover the
+specification and offer autocompletion suggestions based on it.
 
-    $ http-console 127.0.0.1:5984 --json
-    http://127.0.0.1:5984/> .headers
-    Accept: */*
-    Content-Type: application/json
+To enable OpenAPI support, launch *http-console2* with the `--openapi` switch (and
+`--json`, when appropriate):
 
-### cookies #
+    $ http-console --openapi --json 127.0.0.1:8001
 
-You can enable cookie tracking with the `--cookies` option flag.
-To see what cookies are stored, use the `.cookies` command.
+*http-console2* will then try to autodiscover the API specification under the
+following URLs:
 
-### SSL #
+  * `/openapi.json`
+  * `/openapi/v1`
+  * `/openapi/v2`
 
-To enable SSL, pass the `--ssl` flag, or specify the address with `https`.
+You can also explicitly set the specification endpoint:
 
-### quitting #
+    $ http-console --openapi /v1/openapi.json --json 127.0.0.1:8001
 
-    http://127.0.0.1:5984/> .q
+If the specification discovery succeeds, you'll be able to use autocompletion
+when typing in the method and the URL:
 
-nuff' said.
+    http://127.0.0.1:8001> get /apis/apps/v1/d<TAB>
+    get /apis/apps/v1/daemonsets   get /apis/apps/v1/deployments
 
+### Quitting
 
-
+Ctrl + D to exit, as you would the usual Node REPL.
