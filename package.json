@@ -8,6 +8,7 @@
     "repl"
   ],
   "author": "Alexis Sellier <self@cloudhead.net>",
+  "license": "Apache-2.0",
   "contributors": [
     "Maciej Małecki <me@mmalecki.com>"
   ],
