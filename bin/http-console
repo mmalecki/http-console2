@@ -7,6 +7,7 @@ const argv = require('minimist')(process.argv.slice(2), {
     verbose: 'v',
     help: 'h',
     insecure: 'k',
+    json: 'j',
   },
   boolean: ['verbose', 'help', 'json', 'insecure'],
   default: {
@@ -32,7 +33,7 @@ const help = [
   '',
   'options:',
   '-v, --verbose        be more verbose',
-  '    --json           set "Content-Type" header to application/json',
+  '-j, --json           set "Content-Type" header to application/json',
   '    --no-timeout     don\'t timeout requests',
   '-c, --config         config file, executed on startup',
   '    --version        print version',
