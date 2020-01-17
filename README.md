@@ -6,7 +6,8 @@
 addition to [sending basic requests](#making-requests), it supports:
 
 * [OpenAPI-based autocompletion](#openapi-based-autocompletion)
-* Multiline JSON bodies
+* [Multiline JSON bodies](#multiline-json-bodies)
+* [Per-origin command and request body histories](#per-origin-command-and-request-body-histories)
 
 # Installation
 *http-console2* was written for [node](http://nodejs.org), so make sure you have that installed
@@ -76,7 +77,7 @@ You can also send POST/PUT/PATCH/DELETE/etc. requests:
     { uuid: '61568573-72c3-4cfe-8440-8777fd3a76fc', name: 'Roger' }
 
 #### Multiline JSON bodies
-Editing larger JSON object in a single line quickly turns into a nightmare. *
+Editing larger JSON object in a single line quickly turns into a nightmare.
 That's why *http-console* supports multiline JSON bodies:
 
 
@@ -118,6 +119,25 @@ Removing headers is just as easy:
     http://127.0.0.1:8000> Accept:
     http://127.0.0.1:8000> .headers
     X-Lodge: black
+
+### Per-origin command and request body histories
+*http-console2* not only remembers the commands and request bodies you sent, it
+also remembers where you sent them. Therefore, when you use the arrow-up history,
+only commands and bodies sent to the server you're chatting to will be presented.
+
+Alternatively, you can use a named history (which is useful when you're connecting
+to two different servers that consume the same protocol):
+
+    $ http-console --history rabbits 127.0.0.1:8000
+    http://127.0.0.1:8000> get /rabbits
+    ...
+    http://127.0.0.1:8000> ^D
+
+    $ http-console --history rabbits https://api.rabbitshq.com
+    https://api.rabbitshq.com> <Arrow-Up>
+    https://api.rabbitshq.com> get /rabbits
+
+History-based tab completion is also provided.
 
 ### OpenAPI-based autocompletion
 If the API you're chatting with supports OpenAPI, *http-console2* can discover the
