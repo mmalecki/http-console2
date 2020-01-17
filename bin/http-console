@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const path = require('path');
+const normalizeUrl = require('normalize-url')
 const argv = require('minimist')(process.argv.slice(2), {
   alias: {
     verbose: 'v',
@@ -13,10 +14,14 @@ const argv = require('minimist')(process.argv.slice(2), {
     verbose: false,
     help: false,
     timeout: 5000,
+    history: true
   }
 })
 
+const HISTORY_PATH = path.join(process.env.HOME, '.http_console_history')
+
 const HTTPConsole = require('../lib/http-console');
+const History = require('../lib/history.js')
 const OpenAPICompleter = require('../lib/completers/openapi.js')
 const HistoryCompleter = require('../lib/completers/history.js')
 
@@ -24,20 +29,22 @@ const help = [
   'usage: http-console [protocol://][username:password@][host]:port [options]',
   '',
   'options:',
-  '-v, --verbose      be more verbose',
-  '    --json         set "Content-Type" header to application/json',
-  '    --notimeout    don\'t timeout requests',
-  '-c, --config       config file, executed on startup',
-  '    --version      print version',
-  '    --openapi      enable OpenAPI autocompletion',
-  '-h, --help         display this message'
+  '-v, --verbose        be more verbose',
+  '    --json           set "Content-Type" header to application/json',
+  '    --no-timeout     don\'t timeout requests',
+  '-c, --config         config file, executed on startup',
+  '    --version        print version',
+  '    --openapi        enable OpenAPI autocompletion',
+  '    --no-history     disable history',
+  '    --history <name> use named history',
+  '-h, --help           display this message'
 ].join('\n');
 
 let options = {
   json:            argv.json,
   timeout:         argv.timeout,
   verbose:         argv.verbose,
-  completers:      [ new HistoryCompleter() ]
+  completers:      [ new HistoryCompleter() ],
 };
 
 if (typeof process.env.NO_COLOR !== 'undefined') options.colors = false
@@ -64,8 +71,26 @@ if (!url) {
   process.exit(1)
 }
 
+const normalized = normalizeUrl(url)
+const history = new History(HISTORY_PATH)
+const historyName = typeof argv.history === 'string' ?  argv.history : normalized
+
+if (argv.history) {
+  try {
+    options.histories = history.read(historyName)
+  }
+  catch (e) {
+    if (e.code !== 'ENOENT')
+      console.log(`Error reading history for ${normalized}: ${e.message}`)
+  }
+}
+
 const c = new HTTPConsole({
-  baseUrl: url,
+  baseUrl: normalized,
   ...options
 })
 c.start()
+
+c.repl.on('exit', () => {
+  if (argv.history) history.write(historyName, c.histories)
+})
