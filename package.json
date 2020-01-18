@@ -27,6 +27,7 @@
   },
   "devDependencies": {},
   "dependencies": {
+    "deepmerge": "^4.2.2",
     "got": "^10.2.1",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
