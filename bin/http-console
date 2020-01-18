@@ -95,7 +95,7 @@ if (argv.context !== false) {
         if (
           (config.directories || []).includes(dir) ||
           // Allow for OpenAPI-like server definition.
-          (config.servers || []).map(server => server.url || server).includes(normalized)
+          (config.urls || []).includes(normalized)
         ) {
           candidates.add(name)
         }

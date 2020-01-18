@@ -179,12 +179,12 @@ Contexts allow *http-console2* to match the server it's pointed at and the direc
 it's running in to a set of settings.
 
 So, for example, say you know that `127.0.0.1:8000` and its remote counterpart
-definitely serve JSON and use OpenAPI. You also want them to share the same
-history file. You can place the following in your `~/.http-console2/contexts.json`:
+serve JSON and use OpenAPI. You also want them to share the same history file.
+You can place the following in your `~/.http-console2/contexts.json`:
 
     {
       "rabbits": {
-        "servers": ["http://127.0.0.1:8000", "https://api.rabbitshq.com"],
+        "urls": ["http://127.0.0.1:8000", "https://api.rabbitshq.com"],
         "openapi": true,
         "json": true,
         "history": "rabbits"
