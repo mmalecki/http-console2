@@ -176,8 +176,7 @@ when typing in the method and the URL:
     get /apis/apps/v1/daemonsets   get /apis/apps/v1/deployments
 
 ### Contexts
-Contexts allow *http-console2* to match the server it's pointed at and the directory
-it's running in to a set of settings.
+Contexts allow *http-console2* to match the server it's pointed at to a set of settings.
 
 So, for example, say you know that `127.0.0.1:8000` and its remote counterpart
 serve JSON and use OpenAPI. You also want them to share the same history file.
