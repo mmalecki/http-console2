@@ -57,15 +57,6 @@ if (argv.version) {
   process.exit(0);
 }
 
-let options = {
-  json: argv.json,
-  headers: {},
-  timeout: argv.timeout,
-  verbose: argv.verbose,
-  completers: [ new HistoryCompleter() ],
-  rejectUnauthorized: !argv.insecure,
-};
-
 const url = argv._.shift()
 if (!url) {
   console.log(help)
@@ -115,6 +106,15 @@ if (argv.context !== false) {
     }
   }
 }
+
+let options = {
+  json: argv.json,
+  headers: {},
+  timeout: argv.timeout,
+  verbose: argv.verbose,
+  completers: [ new HistoryCompleter() ],
+  rejectUnauthorized: !argv.insecure,
+};
 
 if (typeof process.env.NO_COLOR !== 'undefined') options.colors = false
 
