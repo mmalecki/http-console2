@@ -8,6 +8,7 @@ addition to [sending basic requests](#making-requests), it supports:
 * [OpenAPI-based autocompletion](#openapi-based-autocompletion)
 * [Multiline JSON bodies](#multiline-json-bodies)
 * [Per-origin command and request body histories](#per-origin-command-and-request-body-histories)
+* [Contexts](#contexts)
 
 # Installation
 *http-console2* was written for [node](http://nodejs.org), so make sure you have that installed
