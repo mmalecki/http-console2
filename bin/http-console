@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 
+const fs = require('fs')
 const path = require('path');
 const normalizeUrl = require('normalize-url')
 const argv = require('minimist')(process.argv.slice(2), {
   alias: {
+    context: ['ctx', 'c'],
     verbose: 'v',
     help: 'h',
     insecure: 'k',
@@ -21,7 +23,8 @@ const argv = require('minimist')(process.argv.slice(2), {
   }
 })
 
-const HISTORY_PATH = path.join(process.env.HOME, '.http_console_history')
+const BASE_PATH = path.join(process.env.HOME, '.http-console2')
+const HISTORY_PATH = path.join(BASE_PATH, 'history')
 
 const HTTPConsole = require('../lib/http-console');
 const History = require('../lib/history.js')
@@ -32,43 +35,36 @@ const help = [
   'usage: http-console [protocol://][username:password@][host]:port [options]',
   '',
   'options:',
-  '-v, --verbose        be more verbose',
-  '-j, --json           set "Content-Type" header to application/json',
-  '    --no-timeout     don\'t timeout requests',
-  '-c, --config         config file, executed on startup',
-  '    --version        print version',
-  '    --openapi        enable OpenAPI autocompletion',
-  '    --no-history     disable history',
-  '    --history <name> use named history',
-  '-k, --insecure       disable TLS certificate verification',
-  '-h, --help           display this message'
+  '-v, --verbose          be more verbose',
+  '-j, --json             set "Content-Type" header to application/json',
+  '    --no-timeout       don\'t timeout requests',
+  '-c, --context <name>   context to use',
+  '    --version          print version',
+  '    --openapi          enable OpenAPI autocompletion',
+  '    --no-history       disable history',
+  '    --history <name>   use named history',
+  '-k, --insecure         disable TLS certificate verification',
+  '-h, --help             display this message'
 ].join('\n');
 
-let options = {
-  json:            argv.json,
-  timeout:         argv.timeout,
-  verbose:         argv.verbose,
-  completers:      [ new HistoryCompleter() ],
-  rejectUnauthorized: !argv.insecure
-};
-
-if (typeof process.env.NO_COLOR !== 'undefined') options.colors = false
+if (argv.help) {
+  console.log(help)
+  process.exit(0);
+}
 
 if (argv.version) {
   console.log('http-console v' + httpConsole.version);
   process.exit(0);
 }
 
-if (argv.openapi) {
-  options.completers.push(new OpenAPICompleter({
-    specEndpoints: typeof argv.openapi === 'string' ? argv.openapi : undefined
-  }))
-}
-
-if (argv.help) {
-  console.log(help)
-  process.exit(0);
-}
+let options = {
+  json: argv.json,
+  headers: {},
+  timeout: argv.timeout,
+  verbose: argv.verbose,
+  completers: [ new HistoryCompleter() ],
+  rejectUnauthorized: !argv.insecure,
+};
 
 const url = argv._.shift()
 if (!url) {
@@ -77,6 +73,57 @@ if (!url) {
 }
 
 const normalized = normalizeUrl(url)
+
+if (argv.context !== false) {
+  let contexts
+
+  try {
+    contexts = JSON.parse(fs.readFileSync(path.join(BASE_PATH, 'contexts.json'), 'utf8'))
+  }
+  catch (e) {
+    if (e.code !== 'ENOENT') console.log(`Error reading contexts: ${e.message}`)
+  }
+
+  if (contexts) {
+    const dir = process.cwd()
+    let candidates = new Set()
+    for (const [name, config] of Object.entries(contexts)) {
+      if (typeof argv.context === 'string') {
+        if (argv.context === name) candidates.add(name)
+      }
+      else {
+        if (
+          (config.directories || []).includes(dir) ||
+          // Allow for OpenAPI-like server definition.
+          (config.servers || []).map(server => server.url || server).includes(normalized)
+        ) {
+          candidates.add(name)
+        }
+      }
+    }
+
+    const arr = [...candidates]
+    if (arr.length > 1)
+      console.log(`Warning: more than one candidate context found (${arr.join(', ')}), loading none as a result.`)
+    else if (arr.length > 0) {
+      console.log(`Loading context ${arr[0]}.`)
+      Object.assign(argv, {
+        ...contexts[arr[0]],
+        servers: undefined,
+        directories: undefined
+      })
+    }
+  }
+}
+
+if (typeof process.env.NO_COLOR !== 'undefined') options.colors = false
+
+if (argv.openapi) {
+  options.completers.push(new OpenAPICompleter({
+    specEndpoints: typeof argv.openapi === 'string' ? argv.openapi : undefined
+  }))
+}
+
 const history = new History(HISTORY_PATH)
 const historyName = typeof argv.history === 'string' ?  argv.history : normalized
 
