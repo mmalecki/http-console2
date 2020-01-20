@@ -195,6 +195,9 @@ and from now on, when you run `http-console http://127.0.0.1:8000` or
 `http-console https://api.rabbitshq.com`, it'll be as if you ran
 `http-console --openapi --json --history rabbits <url>`.
 
+You can also configure which context to use explicitly:
+`http-console --ctx rabbits http://127.0.0.1:8000`.
+
 ### Quitting
 
 Ctrl + D to exit, as you would the usual Node REPL.
