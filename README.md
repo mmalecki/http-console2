@@ -198,3 +198,11 @@ and from now on, when you run `http-console http://127.0.0.1:8000` or
 ### Quitting
 
 Ctrl + D to exit, as you would the usual Node REPL.
+
+### Tips & tricks
+#### REPL
+http-console2 employs node.js's core `repl` module, which means you can `.load`
+and `.save` scripts.
+
+## See also
+* [The 0.9 announcement](https://blog.mmalecki.com/2020/01/21/http-console-0.9.html)
