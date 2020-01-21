@@ -11,7 +11,8 @@ const argv = require('minimist')(process.argv.slice(2), {
     insecure: 'k',
     json: 'j',
   },
-  boolean: ['verbose', 'help', 'json', 'insecure'],
+  boolean: ['verbose', 'help', 'json', 'insecure', 'openapi'],
+  array: ['openapi-spec'],
   default: {
     json: false,
     openapi: false,
@@ -35,16 +36,17 @@ const help = [
   'usage: http-console [protocol://][username:password@][host]:port [options]',
   '',
   'options:',
-  '-v, --verbose          be more verbose',
-  '-j, --json             set "Content-Type" header to application/json',
-  '    --no-timeout       don\'t timeout requests',
-  '-c, --context <name>   context to use',
-  '    --version          print version',
-  '    --openapi          enable OpenAPI autocompletion',
-  '    --no-history       disable history',
-  '    --history <name>   use named history',
-  '-k, --insecure         disable TLS certificate verification',
-  '-h, --help             display this message'
+  '-v, --verbose              be more verbose',
+  '-j, --json                 set "Content-Type" header to application/json',
+  '    --no-timeout           don\'t timeout requests',
+  '-c, --context <name>       context to use',
+  '    --version              print version',
+  '    --openapi              enable OpenAPI autocompletion',
+  '    --openapi-spec <url>   check <url> for OpenAPI specification',
+  '    --no-history           disable history',
+  '    --history <name>       use named history',
+  '-k, --insecure             disable TLS certificate verification',
+  '-h, --help                 display this message'
 ].join('\n');
 
 if (argv.help) {
@@ -120,7 +122,7 @@ if (typeof process.env.NO_COLOR !== 'undefined') options.colors = false
 
 if (argv.openapi) {
   options.completers.push(new OpenAPICompleter({
-    specEndpoints: typeof argv.openapi === 'string' ? argv.openapi : undefined
+    specEndpoints: argv['openapi-spec']
   }))
 }
 

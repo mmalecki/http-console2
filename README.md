@@ -167,7 +167,7 @@ following URLs:
 
 You can also explicitly set the specification endpoint:
 
-    $ http-console --openapi /v1/openapi.json --json 127.0.0.1:8001
+    $ http-console --openapi --openapi-spec /v1/openapi.json --json 127.0.0.1:8001
 
 If the specification discovery succeeds, you'll be able to use autocompletion
 when typing in the method and the URL:
